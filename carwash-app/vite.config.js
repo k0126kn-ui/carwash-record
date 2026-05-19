@@ -3,6 +3,8 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  base: "/carwash-record/",
+
   plugins: [
     react(),
 
@@ -19,8 +21,8 @@ export default defineConfig({
         name: "Car Wash Record",
         short_name: "CarWash",
 
-        start_url: "/",
-        scope: "/",
+        start_url: "/carwash-record/",
+        scope: "/carwash-record/",
 
         display: "standalone",
         orientation: "portrait",
@@ -30,13 +32,13 @@ export default defineConfig({
 
         icons: [
           {
-            src: "/icon-192.png",
+            src: "/carwash-record/icon-192.png",
             sizes: "192x192",
             type: "image/png",
           },
 
           {
-            src: "/icon-512.png",
+            src: "/carwash-record/icon-512.png",
             sizes: "512x512",
             type: "image/png",
           },
@@ -45,7 +47,7 @@ export default defineConfig({
 
       workbox: {
         globPatterns: [
-          "**/*.{js,css,html,png,svg,ico}"
+          "**/*.{js,css,html,png,svg,ico}",
         ],
 
         runtimeCaching: [
