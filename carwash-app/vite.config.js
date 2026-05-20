@@ -36,30 +36,10 @@ export default defineConfig({
             sizes: "192x192",
             type: "image/png",
           },
-
           {
             src: "/carwash-record/icon-512.png",
             sizes: "512x512",
             type: "image/png",
-          },
-        ],
-      },
-
-      workbox: {
-        globPatterns: [
-          "**/*.{js,css,html,png,svg,ico}",
-        ],
-
-        runtimeCaching: [
-          {
-            urlPattern: ({ request }) =>
-              request.destination === "document",
-
-            handler: "NetworkFirst",
-
-            options: {
-              cacheName: "pages",
-            },
           },
         ],
       },
