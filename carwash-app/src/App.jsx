@@ -410,7 +410,18 @@ function generateId() {
   }
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
+function getTodayInputValue() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
+function formatSelectedDate(dateValue) {
+  const [year, month, day] = dateValue.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString();
+}
 function sanitizeRecord(record) {
   return {
     id:            typeof record.id === "string"   ? record.id            : generateId(),
@@ -677,6 +688,7 @@ function App() {
   const [ui, dispatchUi]           = useReducer(uiReducer, { type: UI_STATES.IDLE });
 
   const [washType, setWashType]       = useState("本洗車");
+  const [recordDate, setRecordDate] = useState(getTodayInputValue);
   const [memo, setMemo]               = useState("");
   const [chemicalText, setChemicalText] = useState("");
   const [error, setError]             = useState("");
@@ -750,10 +762,11 @@ function App() {
           washChemicals: selectedChemicals,
           protections: [],
           memo,
-          date: new Date().toLocaleDateString(),
+          date: formatSelectedDate(recordDate),
         },
       });
       dispatchUi({ type: "RESET" });
+      setRecordDate(getTodayInputValue());
       setChemicalText("");
       setMemo("");
       setError("");
@@ -933,7 +946,13 @@ function App() {
         >
           {WASH_TYPES.map((t) => <option key={t}>{t}</option>)}
         </select>
-
+<input
+  type="date"
+  aria-label="洗車日"
+  value={recordDate}
+  onChange={(e) => setRecordDate(e.target.value)}
+  style={styles.input}
+/>
         <input
           type="text"
           placeholder="ケミカルを入力（カンマ区切り）"
