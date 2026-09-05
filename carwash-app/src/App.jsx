@@ -76,6 +76,10 @@ const PROTECTION_LIST = [
   "NATIVE スプレーワックス",
   "BLEND スプレーワックス",
   "PERFECTA 2.0",
+  "PERFECTA SiO2",
+  "LUMINUS EASY UP SPRAY",
+  "LUMINUS ブラックダイヤモンド AD",
+  "LUMINUS BLACK SLICK EDITION version2",
 ];
 
 const CHEMICAL_PRESETS = [
@@ -225,15 +229,14 @@ const styles = {
   },
 
   card: {
-    backgroundColor: "#141414",
-    border: "1px solid #2a2a2a",
-    borderRadius: "20px",
-    padding: "16px",
-    position: "relative",
-    zIndex: 2,
-    transition: "transform 0.2s ease",
-    touchAction: "pan-y",
-  },
+  backgroundColor: "#141414",
+  border: "1px solid #2a2a2a",
+  borderRadius: "20px",
+  padding: "16px",
+  position: "relative",
+  zIndex: 2,
+  transition: "transform 0.2s ease",
+},
 
   badge: (type) => ({
     display: "inline-block",
@@ -509,74 +512,140 @@ function Dialog({ message, confirmLabel = "OK", danger = false, onConfirm, onCan
 // RECORD CARD
 // ─────────────────────────────
 const RecordCard = memo(function RecordCard({
-  record, ui, onEdit, onRequestDelete, onSave, onToggleProtection,
-  onTouchStart, onTouchMove, onTouchEnd,
+  record,
+  ui,
+  onEdit,
+  onRequestDelete,
+  onSave,
+  onToggleProtection,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
 }) {
-  const isSwiped  = ui.type === UI_STATES.SWIPED  && ui.recordId === record.id;
-  const isEditing = ui.type === UI_STATES.EDITING  && ui.recordId === record.id;
-  const hasProtections = record.protections.length > 0;
-  const pending = isEditing ? ui.pendingProtections : [];
+  const isSwiped =
+    ui.type === UI_STATES.SWIPED &&
+    ui.recordId === record.id;
+
+  const isEditing =
+    ui.type === UI_STATES.EDITING &&
+    ui.recordId === record.id;
+
+  const hasProtections =
+    record.protections.length > 0;
+
+  const pending = isEditing
+    ? ui.pendingProtections
+    : [];
 
   return (
     <div style={styles.swipeWrapper}>
+
       {/* 削除背景 */}
-      <div style={styles.deleteBackground}>
-        <span style={{ fontSize: "20px" }}>🗑</span>
-        <span style={styles.deleteLabel}>削除</span>
+      <div
+        style={styles.deleteBackground}
+        onClick={() => onRequestDelete(record.id)}
+      >
+        <span style={{ fontSize: "20px" }}>
+          🗑
+        </span>
+
+        <span style={styles.deleteLabel}>
+          削除
+        </span>
       </div>
 
       {/* カード */}
       <div
         style={{
           ...styles.card,
-          transform: isSwiped ? "translateX(-90px)" : "translateX(0)",
+          transform: isSwiped
+            ? "translateX(-90px)"
+            : "translateX(0)",
         }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={() => onTouchEnd(record.id)}
-        onClick={() => { if (isSwiped) onRequestDelete(record.id); }}
       >
-        <div style={{ fontSize: "13px", color: "#666666" }}>{record.date}</div>
+        <div
+          style={{
+            fontSize: "13px",
+            color: "#666666",
+          }}
+        >
+          {record.date}
+        </div>
 
-        <div style={styles.badge(record.type)}>{record.type}</div>
+        <div style={styles.badge(record.type)}>
+          {record.type}
+        </div>
 
-        <div style={styles.sectionTitle}>洗浄ケミカル</div>
-        <div>{record.washChemicals.join(" / ")}</div>
+        <div style={styles.sectionTitle}>
+          洗浄ケミカル
+        </div>
+
+        <div>
+          {record.washChemicals.join(" / ")}
+        </div>
 
         <div style={styles.sectionTitle}>
           保護剤
+
           {!isEditing && hasProtections && (
-            <button type="button" onClick={() => onEdit(record)} style={styles.editButton}>
+            <button
+              type="button"
+              onClick={() => onEdit(record)}
+              style={styles.editButton}
+            >
               編集
             </button>
           )}
         </div>
-        <div>{hasProtections ? record.protections.join(" / ") : "なし"}</div>
 
-        <div style={styles.sectionTitle}>メモ</div>
-        <div>{record.memo || "なし"}</div>
+        <div>
+          {hasProtections
+            ? record.protections.join(" / ")
+            : "なし"}
+        </div>
 
-        {/* 保護剤未登録：ボタン表示 */}
+        <div style={styles.sectionTitle}>
+          メモ
+        </div>
+
+        <div>
+          {record.memo || "なし"}
+        </div>
+
+        {/* 保護剤未登録 */}
         {!isEditing && !hasProtections && (
-          <button type="button" onClick={() => onEdit(record)} style={styles.initRegisterButton}>
+          <button
+            type="button"
+            onClick={() => onEdit(record)}
+            style={styles.initRegisterButton}
+          >
             + 保護剤を登録
           </button>
         )}
 
-        {/* 編集中：選択UI */}
+        {/* 編集中 */}
         {isEditing && (
           <>
             <div style={styles.buttonRow}>
               {PROTECTION_LIST.map((p) => {
-                const selected = pending.includes(p);
+                const selected =
+                  pending.includes(p);
+
                 return (
                   <button
                     type="button"
                     key={p}
-                    onClick={() => onToggleProtection(p)}
+                    onClick={() =>
+                      onToggleProtection(p)
+                    }
                     style={styles.sideButton(selected)}
                   >
-                    {selected ? `✓ ${p}` : `+ ${p}`}
+                    {selected
+                      ? `✓ ${p}`
+                      : `+ ${p}`}
                   </button>
                 );
               })}
@@ -585,9 +654,13 @@ const RecordCard = memo(function RecordCard({
             <button
               type="button"
               onClick={() => onSave(record.id)}
-              style={styles.saveProtectionButton(pending.length === 0)}
+              style={styles.saveProtectionButton(
+                pending.length === 0
+              )}
             >
-              {pending.length > 0 ? "保護剤の選択を確定" : "保護剤を未施工にする（クリア）"}
+              {pending.length > 0
+                ? "保護剤の選択を確定"
+                : "保護剤を未施工にする（クリア）"}
             </button>
           </>
         )}
@@ -735,9 +808,20 @@ function App() {
   };
 
   const handleTouchMove = (e) => {
-    touchRef.current.endX = e.changedTouches[0].screenX;
-    touchRef.current.endY = e.changedTouches[0].screenY;
-  };
+  touchRef.current.endX = e.changedTouches[0].screenX;
+  touchRef.current.endY = e.changedTouches[0].screenY;
+
+  const deltaX =
+    touchRef.current.startX - touchRef.current.endX;
+
+  const deltaY =
+    touchRef.current.startY - touchRef.current.endY;
+
+  // 横スワイプ優先
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    e.preventDefault();
+  }
+};
 
   const handleTouchEnd = (recordId) => {
     const { startX, startY, endX, endY } = touchRef.current;
